@@ -1,0 +1,5 @@
+1. Print profit % for all the movies
+
+SELECT *, (revenue-budget) as profit,
+(revenue-budget)*100/budget as profit_per
+FROM financials

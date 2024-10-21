@@ -1,0 +1,212 @@
+# USE:
+USE moviesdb;
+
+# SELECT:
+SELECT * FROM moviesdb.movies;
+
+SELECT title, industry FROM movies;
+
+# Distinct
+SELECT distinct industry FROM movies;
+
+# Like
+SELECT * FROM movies WHERE title LIKE "%america%";
+
+# WHERE
+SELECT * FROM movies WHERE industry="Hollywood";
+
+SELECT * FROM movies WHERE studio=""; # for null values
+
+# COUNT
+SELECT COUNT(*) FROM movies WHERE industry="Hollywood";
+
+# <, >, =
+SELECT * FROM movies WHERE imdb_rating>=9;
+
+# AND
+SELECT * FROM movies WHERE imdb_rating>8 AND imdb_rating<=9;
+
+# BETWEEN
+SELECT * FROM movies WHERE imdb_rating BETWEEN 8 AND 9;
+
+# OR
+SELECT *
+FROM movies
+WHERE release_year=2022 or release_year=2018 or release_year=2019
+
+# IN
+SELECT *
+FROM movies
+WHERE release_year IN(2018, 2019, 2022)
+
+# NULL
+SELECT imdb_rating
+FROM movies
+WHERE imdb_rating is NULL
+
+# NOT NULL
+SELECT imdb_rating
+FROM movies
+WHERE imdb_rating is NOT NULL
+
+# ORDER BY (default ascending)
+SELECT *
+FROM movies
+WHERE industry="Hollywood"
+ORDER BY imdb_rating
+
+# ORDER BY (descending)
+SELECT *
+FROM movies
+WHERE industry="Hollywood"
+ORDER BY imdb_rating DESC
+
+# LIMIT
+SELECT *
+FROM movies
+WHERE industry="Hollywood"
+ORDER BY imdb_rating DESC LIMIT 5
+
+# MAX
+SELECT MAX(imdb_rating)
+FROM movies
+
+# MIN
+SELECT MIN(imdb_rating)
+FROM movies
+
+# AVG with ROUND
+SELECT ROUND(AVG(imdb_rating),2)
+FROM movies
+WHERE studio="Marvel studios"
+
+# as
+SELECT MAX(imdb_rating) as max_rating,
+MIN(imdb_rating) as min_rating,
+ROUND(AVG(imdb_rating),2) as avg_rating
+FROM movies
+WHERE studio="Marvel studios"
+
+# GROUP BY
+SELECT studio, COUNT(*) as Count
+FROM movies
+GROUP BY studio
+ORDER BY Count DESC
+
+# GROUP BY (+1)
+SELECT studio,
+COUNT(*) as Count,
+ROUND(AVG(imdb_rating),1) as avg_rating
+FROM movies
+WHERE studio!=""
+GROUP BY studio
+ORDER BY avg_rating DESC;
+
+# HAVING
+SELECT release_year, COUNT(*) as Count
+FROM movies
+GROUP BY release_year
+HAVING Count>2
+ORDER BY Count DESC
+
+# YEAR() & CURDATE()
+SELECT *, YEAR(CURDATE())-birth_year as age
+FROM actors
+ORDER BY age
+
+# Profit
+SELECT *, (revenue-budget) as profit
+FROM financials
+
+# USE to INR
+SELECT *,
+IF(currency="USD", revenue*77, revenue) as revenue_inr
+FROM financials
+
+# Unit Conversion
+SELECT *,
+CASE
+	WHEN unit="Billions" Then revenue*1000
+    WHEN unit="Thousands" Then revenue/1000
+    ELSE revenue
+END as revenue_mil
+FROM financials;
+
+# 1B -> 1000M, so revenue*1000
+# 1000 Thousands(000) -> 1M, so revenue/1000
+
+# INNER JOIN
+SELECT
+	m.movie_id, title, budget, revenue, unit, currency
+FROM movies m
+JOIN financials f
+ON m.movie_id=f.movie_id
+
+# LEFT JOIN
+SELECT
+	m.movie_id, title, budget, revenue, unit, currency
+FROM movies m
+LEFT JOIN financials f
+ON m.movie_id=f.movie_id
+
+# RIGHT JOIN
+SELECT
+	f.movie_id, title, budget, revenue, unit, currency
+FROM movies m
+RIGHT JOIN financials f
+ON m.movie_id=f.movie_id
+
+# UNION (FULL JOIN)
+SELECT
+	m.movie_id, title, budget, revenue, unit, currency
+FROM movies m LEFT JOIN financials f ON m.movie_id=f.movie_id
+UNION
+SELECT
+	f.movie_id, title, budget, revenue, unit, currency
+FROM movies m RIGHT JOIN financials f ON m.movie_id=f.movie_id
+
+# USING (only used if both tables have same column names)
+SELECT
+	movie_id, title, budget, revenue, unit, currency
+FROM movies
+RIGHT JOIN financials
+USING (movie_id)
+
+# If they have different column names we will use "ON"
+
+# INSERT
+INSERT INTO actors (name)
+VALUES ('Sriram',2000), ('Sushanth', 1998), ('Dheeraj', 2003);
+
+SELECT *
+FROM actors
+
+# Disable safe updates for this session
+SET SQL_SAFE_UPDATES = 0;
+
+# After you done messing with data Re-enable safe updates
+SET SQL_SAFE_UPDATES = 1;
+
+# DELETE
+SET SQL_SAFE_UPDATES = 0;
+
+DELETE FROM actors
+WHERE name="Sushanth";
+
+SELECT *
+FROM actors;
+
+SET SQL_SAFE_UPDATES = 1;
+
+# UPDATE
+SET SQL_SAFE_UPDATES = 0;
+
+UPDATE actors
+SET name="Sushanth", birth_year=1999
+WHERE actor_id=173;
+
+SELECT *
+FROM actors;
+
+SET SQL_SAFE_UPDATES = 1;
+

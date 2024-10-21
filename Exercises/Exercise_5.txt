@@ -1,0 +1,33 @@
+1. Show all the movies with their language names
+
+SELECT
+	m.title, l.name
+FROM movies m
+JOIN languages l
+USING (language_id)
+
+2. Show all Telugu movie names (assuming you don't know the language
+id for Telugu)
+
+SELECT
+	title, name
+FROM movies
+LEFT JOIN languages
+USING (language_id)
+HAVING name="Telugu"
+
+3. Show the language and number of movies released in that language
+
+SELECT
+	distinct name, COUNT(name) as Count
+FROM movies
+LEFT JOIN languages
+USING (language_id)
+GROUP BY name
+UNION
+SELECT
+	distinct name, COUNT(name) as Count
+FROM movies
+RIGHT JOIN languages
+USING (language_id)
+GROUP BY name
